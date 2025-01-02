@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <libgen.h>
+#include <linux/limits.h>
 #include "../common/img/nothing.h"
 #include "../common/common.h"
 #include "../common/options.h"

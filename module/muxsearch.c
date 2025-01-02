@@ -640,7 +640,7 @@ void handle_confirm(void) {
 void random_select(void) {
     if (msgbox_active || !ui_count) return;
 
-    uint32_t random_select = arc4random() % ui_count;
+    uint32_t random_select = random() % ui_count;
     int selected_index = (int) (random_select & INT32_MAX);
 
     !(selected_index & 1) ? list_nav_next(selected_index) : list_nav_prev(selected_index);
