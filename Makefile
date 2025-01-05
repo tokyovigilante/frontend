@@ -27,7 +27,7 @@ DEBUG ?= 0
 VERBOSE = $(if $(filter 2,$(DEBUG)),, @)
 QUIET = $(if $(filter 1,$(DEBUG)),,>/dev/null 2>&1)
 
-CC = ccache $(CROSS_COMPILE)gcc -O3
+CC = ccache $(CROSS_COMPILE)gcc -g
 
 CFLAGS = $(ARCH) -flto=auto -ffunction-sections -fdata-sections \
          -flto -finline-functions -Wall -Wno-format-zero-length
