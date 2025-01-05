@@ -35,7 +35,15 @@ static uint64_t held = 0;
 // Processes gamepad buttons.
 static void process_key(const mux_input_options *opts, const struct input_event *event) {
     mux_input_type type;
-    if (event->code == device.RAW_INPUT.BUTTON.A) {
+    if (event->code == device.RAW_INPUT.DPAD.UP) {
+        type = !opts->swap_axis ? MUX_INPUT_DPAD_UP : MUX_INPUT_DPAD_LEFT;
+    } else if (event->code == device.RAW_INPUT.DPAD.LEFT) {
+        type = !opts->swap_axis ? MUX_INPUT_DPAD_LEFT : MUX_INPUT_DPAD_UP;
+    } else if (event->code == device.RAW_INPUT.DPAD.DOWN) {
+        type = !opts->swap_axis ? MUX_INPUT_DPAD_DOWN : MUX_INPUT_DPAD_RIGHT;
+    } else if (event->code == device.RAW_INPUT.DPAD.RIGHT) {
+        type = !opts->swap_axis ? MUX_INPUT_DPAD_RIGHT : MUX_INPUT_DPAD_DOWN;
+    } else if (event->code == device.RAW_INPUT.BUTTON.A) {
         type = !opts->swap_btn ? MUX_INPUT_A : MUX_INPUT_B;
     } else if (event->code == device.RAW_INPUT.BUTTON.B) {
         type = !opts->swap_btn ? MUX_INPUT_B : MUX_INPUT_A;
@@ -80,31 +88,18 @@ static void process_key(const mux_input_options *opts, const struct input_event 
 // Processes gamepad axes (D-pad and the sticks).
 static void process_abs(const mux_input_options *opts, const struct input_event *event) {
     int axis;
-    bool analog;
-    if (event->code == device.RAW_INPUT.DPAD.UP) {
-        // Axis: D-pad vertical
-        axis = !opts->swap_axis ? MUX_INPUT_DPAD_UP : MUX_INPUT_DPAD_LEFT;
-        analog = false;
-    } else if (event->code == device.RAW_INPUT.DPAD.LEFT) {
-        // Axis: D-pad horizontal
-        axis = !opts->swap_axis ? MUX_INPUT_DPAD_LEFT : MUX_INPUT_DPAD_UP;
-        analog = false;
-    } else if (event->code == device.RAW_INPUT.ANALOG.LEFT.UP) {
+    if (event->code == device.RAW_INPUT.ANALOG.LEFT.UP) {
         // Axis: left stick vertical
         axis = !opts->swap_axis ? MUX_INPUT_LS_UP : MUX_INPUT_LS_LEFT;
-        analog = true;
     } else if (event->code == device.RAW_INPUT.ANALOG.LEFT.LEFT) {
         // Axis: left stick horizontal
         axis = !opts->swap_axis ? MUX_INPUT_LS_LEFT : MUX_INPUT_LS_UP;
-        analog = true;
     } else if (event->code == device.RAW_INPUT.ANALOG.RIGHT.UP) {
         // Axis: right stick vertical
         axis = !opts->swap_axis ? MUX_INPUT_RS_UP : MUX_INPUT_RS_LEFT;
-        analog = true;
     } else if (event->code == device.RAW_INPUT.ANALOG.RIGHT.LEFT) {
         // Axis: right stick horizontal
         axis = !opts->swap_axis ? MUX_INPUT_RS_LEFT : MUX_INPUT_RS_UP;
-        analog = true;
     } else {
         return;
     }
@@ -114,12 +109,10 @@ static void process_abs(const mux_input_options *opts, const struct input_event 
     //
     // We use threshold of 80% of the nominal axis maximum to detect analog directional presses,
     // which seems to accommodate most variation without being too sensitive for "in-spec" sticks.
-    if ((analog && event->value <= -device.INPUT.AXIS + device.INPUT.AXIS / 5) ||
-        (!analog && event->value == -1)) {
+    if (event->value <= -device.INPUT.AXIS + device.INPUT.AXIS / 5) {
         // Direction: up/left
         pressed = ((pressed | BIT(axis)) & ~BIT(axis + 1));
-    } else if ((analog && event->value >= device.INPUT.AXIS - device.INPUT.AXIS / 5) ||
-               (!analog && event->value == 1)) {
+    } else if (event->value >= device.INPUT.AXIS - device.INPUT.AXIS / 5) { 
         // Direction: down/right
         pressed = ((pressed | BIT(axis + 1)) & ~BIT(axis));
     } else {
