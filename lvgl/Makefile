@@ -10,7 +10,7 @@ else
     $(error Unsupported Device: $(DEVICE))
 endif
 
-CC = ccache $(CROSS_COMPILE)gcc -O3
+CC = ccache $(CROSS_COMPILE)gcc -g
 
 LVGL_DIR_NAME 	?= .
 LVGL_DIR 		?= .
