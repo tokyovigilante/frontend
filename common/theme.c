@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "common.h"
 #include "options.h"
 #include "theme.h"
@@ -880,8 +881,7 @@ void apply_text_long_dot(struct theme_config *theme, lv_obj_t *ui_pnlContent,
     lv_label_set_long_mode(ui_lblItem, LV_LABEL_LONG_WRAP);
     const lv_font_t *font = lv_obj_get_style_text_font(ui_pnlContent, LV_PART_MAIN);
     const lv_coord_t letter_space = lv_obj_get_style_text_letter_space(ui_pnlContent, LV_PART_MAIN);
-    lv_coord_t act_line_length = lv_txt_get_width(item_text, strlen(item_text), font, letter_space,
-                                                  LV_TEXT_FLAG_EXPAND);
+    lv_coord_t act_line_length = lv_txt_get_width(item_text, strlen(item_text), font, letter_space);
     int max_item_width = theme->MISC.CONTENT.WIDTH - theme->FONT.LIST_PAD_LEFT - theme->FONT.LIST_PAD_RIGHT -
                          (theme->LIST_DEFAULT.BORDER_WIDTH * 2);
 
@@ -894,7 +894,7 @@ void apply_text_long_dot(struct theme_config *theme, lv_obj_t *ui_pnlContent,
             strcat(new_string, "…");
 
             if (max_item_width >=
-                lv_txt_get_width(new_string, strlen(new_string), font, letter_space, LV_TEXT_FLAG_EXPAND)) {
+                lv_txt_get_width(new_string, strlen(new_string), font, letter_space)) {
                 lv_label_set_text(ui_lblItem, new_string);
                 free(new_string);
                 return;
@@ -913,8 +913,7 @@ void apply_size_to_content(struct theme_config *theme, lv_obj_t *ui_pnlContent, 
 
         const lv_font_t *font = lv_obj_get_style_text_font(ui_pnlContent, LV_PART_MAIN);
         const lv_coord_t letter_space = lv_obj_get_style_text_letter_space(ui_pnlContent, LV_PART_MAIN);
-        lv_coord_t act_line_length = lv_txt_get_width(item_text, strlen(item_text), font, letter_space,
-                                                      LV_TEXT_FLAG_EXPAND);
+        lv_coord_t act_line_length = lv_txt_get_width(item_text, strlen(item_text), font, letter_space);
         int item_width = LV_MIN(theme->FONT.LIST_PAD_LEFT + act_line_length + theme->FONT.LIST_PAD_RIGHT,
                                 theme->MISC.CONTENT.WIDTH - (theme->LIST_DEFAULT.BORDER_WIDTH * 2));
         // When using size to content right padding needs to be zero to prevent text from wrapping.
@@ -977,7 +976,7 @@ void init_item_animation() {
     lv_anim_init(&style_list_item_animation);
     lv_anim_set_delay(&style_list_item_animation, 250);
     lv_style_set_anim(&style_list_item_default, &style_list_item_animation);
-    lv_style_set_anim_speed(&style_list_item_default, 70);
+    lv_style_set_anim_duration(&style_list_item_default, 70);
 }
 
 void init_item_style(struct theme_config *theme) {

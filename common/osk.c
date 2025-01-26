@@ -1,3 +1,4 @@
+#include <strings.h>
 #include "../lvgl/lvgl.h"
 #include "common.h"
 #include "options.h"
@@ -111,8 +112,8 @@ void key_up() {
     if (strcasecmp(lv_btnmatrix_get_btn_text(key_entry, key_curr), "§") == 0) {
         key_curr--;
     }
-    lv_event_send(key_entry, LV_EVENT_SCROLL, &key_curr);
-    lv_event_send(num_entry, LV_EVENT_SCROLL, &key_curr);
+    lv_obj_send_event(key_entry, LV_EVENT_SCROLL, &key_curr);
+    lv_obj_send_event(num_entry, LV_EVENT_SCROLL, &key_curr);
 }
 
 void key_down() {
@@ -165,8 +166,8 @@ void key_down() {
     if (strcasecmp(lv_btnmatrix_get_btn_text(key_entry, key_curr), "§") == 0) {
         key_curr++;
     }
-    lv_event_send(key_entry, LV_EVENT_SCROLL, &key_curr);
-    lv_event_send(num_entry, LV_EVENT_SCROLL, &key_curr);
+    lv_obj_send_event(key_entry, LV_EVENT_SCROLL, &key_curr);
+    lv_obj_send_event(num_entry, LV_EVENT_SCROLL, &key_curr);
 }
 
 void key_left() {
@@ -180,8 +181,8 @@ void key_left() {
         if (strcasecmp(lv_btnmatrix_get_btn_text(key_entry, key_curr), "§") == 0) {
             key_curr--;
         }
-        lv_event_send(key_entry, LV_EVENT_SCROLL, &key_curr);
-        lv_event_send(num_entry, LV_EVENT_SCROLL, &key_curr);
+        lv_obj_send_event(key_entry, LV_EVENT_SCROLL, &key_curr);
+        lv_obj_send_event(num_entry, LV_EVENT_SCROLL, &key_curr);
     }
 }
 
@@ -202,8 +203,8 @@ void key_right() {
         if (strcasecmp(lv_btnmatrix_get_btn_text(key_entry, key_curr), "§") == 0) {
             key_curr++;
         }
-        lv_event_send(key_entry, LV_EVENT_SCROLL, &key_curr);
-        lv_event_send(num_entry, LV_EVENT_SCROLL, &key_curr);
+        lv_obj_send_event(key_entry, LV_EVENT_SCROLL, &key_curr);
+        lv_obj_send_event(num_entry, LV_EVENT_SCROLL, &key_curr);
     }
 }
 
@@ -232,5 +233,5 @@ void key_swap() {
 
 void key_backspace(lv_obj_t *entry) {
     play_sound("keypress", nav_sound, 0, 0);
-    lv_textarea_del_char(entry);
+    lv_textarea_delete_char(entry);
 }

@@ -6,8 +6,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "../lvgl/lvgl.h"
-#include "../lvgl/src/drivers/display/sdl.h"
-#include "../lvgl/src/drivers/input/evdev.h"
+// #include "../lvgl/src/draw/sdl/lv_draw_sdl.h"
+// #include "../lvgl/src/drivers/evdev/lv_evdev.h"
 #include "init.h"
 #include "ui_common.h"
 #include "common.h"
@@ -57,34 +57,25 @@ void safe_quit(int exit_status) {
 
 void init_display() {
     lv_init();
-    sdl_init();
 
-    static lv_disp_drv_t disp_drv;
-    static lv_disp_draw_buf_t disp_buf;
+    static lv_display_t * disp;
     struct screen_dimension dims = get_device_dimensions();
+    disp = lv_sdl_window_create(dims.WIDTH, dims.HEIGHT);
+    // disp_drv.draw_buf = &disp_buf;
+    // disp_drv.flush_cb = sdl_display_flush;
+    // disp_drv.hor_res = dims.WIDTH;
+    // disp_drv.ver_res = dims.HEIGHT;
+    // disp_drv.physical_hor_res = -1;
+    // disp_drv.physical_ver_res = -1;
+    // disp_drv.offset_x = 0;
+    // disp_drv.offset_y = 0;
+    // disp_drv.full_refresh = 1;
+    // disp_drv.direct_mode = 1;
+    // disp_drv.antialiasing = 1;
+    // disp_drv.color_chroma_key = lv_color_hex(0xFF00FF);
 
-    uint32_t disp_buf_size = dims.WIDTH * dims.HEIGHT;
-    lv_color_t *disp_buf_s1 = (lv_color_t *) malloc(disp_buf_size * sizeof(lv_color_t));
-    lv_color_t *disp_buf_s2 = (lv_color_t *) malloc(disp_buf_size * sizeof(lv_color_t));
-
-    lv_disp_draw_buf_init(&disp_buf, disp_buf_s1, disp_buf_s2, disp_buf_size);
-    lv_disp_drv_init(&disp_drv);
-
-    disp_drv.draw_buf = &disp_buf;
-    disp_drv.flush_cb = sdl_display_flush;
-    disp_drv.hor_res = dims.WIDTH;
-    disp_drv.ver_res = dims.HEIGHT;
-    disp_drv.physical_hor_res = -1;
-    disp_drv.physical_ver_res = -1;
-    disp_drv.offset_x = 0;
-    disp_drv.offset_y = 0;
-    disp_drv.full_refresh = 1;
-    disp_drv.direct_mode = 1;
-    disp_drv.antialiasing = 1;
-    disp_drv.color_chroma_key = lv_color_hex(0xFF00FF);
-
-    lv_disp_drv_register(&disp_drv);
-    lv_disp_flush_ready(&disp_drv);
+    // lv_disp_drv_register(&disp_drv);
+    // lv_disp_flush_ready(&disp_drv);
 }
 
 int open_input(const char *path, const char *error_message) {
@@ -96,20 +87,21 @@ int open_input(const char *path, const char *error_message) {
     return fd;
 }
 
-void init_input(int *joy_general, int *joy_power, int *joy_volume, int *joy_extra) {
-    *joy_general = open_input(device.INPUT_EVENT.JOY_GENERAL, lang.SYSTEM.NO_JOY_GENERAL);
-    *joy_power = open_input(device.INPUT_EVENT.JOY_POWER, lang.SYSTEM.NO_JOY_POWER);
-    *joy_volume = open_input(device.INPUT_EVENT.JOY_VOLUME, lang.SYSTEM.NO_JOY_VOLUME);
-    *joy_extra = open_input(device.INPUT_EVENT.JOY_EXTRA, lang.SYSTEM.NO_JOY_EXTRA);
+void init_input(int *js_fd, int *js_fd_sys) {
+    static lv_indev_t *indev;
+    indev = lv_evdev_create(LV_INDEV_TYPE_KEYPAD, "/dev/input/event1");
+    
+    // *js_fd = open_input(device.INPUT.EV1, lang.SYSTEM.NO_JOY);
+    // *js_fd_sys = open_input(device.INPUT.EV0, lang.SYSTEM.NO_JOY);
 
-    lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);
+    // lv_indev_drv_t indev_drv;
+    // lv_indev_drv_init(&indev_drv);
 
-    indev_drv.type = LV_INDEV_TYPE_KEYPAD;
-    indev_drv.read_cb = evdev_read;
-    indev_drv.user_data = (void *) (intptr_t) (*joy_general);
+    // indev_drv.type = LV_INDEV_TYPE_KEYPAD;
+    // indev_drv_set_read_cb(indev, evdev_read);
+    // indev_drv_set_user_data(indev, js_fd);
 
-    lv_indev_drv_register(&indev_drv);
+    // lv_indev_drv_register(&indev_drv);
 }
 
 void init_timer(void (*ui_refresh_task)(lv_timer_t *), void (*update_system_info)(lv_timer_t *)) {

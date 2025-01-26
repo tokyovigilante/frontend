@@ -667,7 +667,7 @@ char *get_datetime() {
 }
 
 void datetime_task(lv_timer_t *timer) {
-    struct dt_task_param *dt_par = timer->user_data;
+    struct dt_task_param *dt_par = lv_timer_get_user_data(timer);
     lv_label_set_text(dt_par->lblDatetime, get_datetime());
 }
 
@@ -728,10 +728,10 @@ void increase_option_value(lv_obj_t *element) {
 
     if (current < (total - 1)) {
         current++;
-        lv_dropdown_set_selected(element, current);
+        lv_dropdown_set_selected(element, current, LV_ANIM_ON);
     } else {
         current = 0;
-        lv_dropdown_set_selected(element, current);
+        lv_dropdown_set_selected(element, current, LV_ANIM_ON);
     }
 }
 
@@ -742,10 +742,10 @@ void decrease_option_value(lv_obj_t *element) {
 
     if (current > 0) {
         current--;
-        lv_dropdown_set_selected(element, current);
+        lv_dropdown_set_selected(element, current, LV_ANIM_ON);
     } else {
         current = (total - 1);
-        lv_dropdown_set_selected(element, current);
+        lv_dropdown_set_selected(element, current, LV_ANIM_ON);
     }
 }
 
@@ -1314,7 +1314,7 @@ const lv_font_t *get_language_font() {
 void load_font_text_from_file(const char *filepath, lv_obj_t *element) {
     char theme_font_text_fs[MAX_BUFFER_SIZE];
     snprintf(theme_font_text_fs, sizeof(theme_font_text_fs), "M:%s", filepath);
-    lv_font_t *font = lv_font_load(theme_font_text_fs);
+    lv_font_t *font = lv_binfont_create(theme_font_text_fs);
     font->fallback = get_language_font();
     lv_obj_set_style_text_font(element, font, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
@@ -1617,16 +1617,16 @@ void update_image(lv_obj_t *ui_imgobj, struct ImageSettings image_settings) {
         snprintf(image_path, sizeof(image_path), "M:%s", image_settings.image_path);
 
         if (image_settings.max_height > 0 && image_settings.max_width > 0) {
-            lv_img_header_t img_header;
-            lv_img_decoder_get_info(image_path, &img_header);
+            lv_image_header_t image_header;
+            lv_image_decoder_get_info(image_path, &image_header);
 
-            float width_ratio = (float) image_settings.max_width / img_header.w;
-            float height_ratio = (float) image_settings.max_height / img_header.h;
+            float width_ratio = (float) image_settings.max_width / image_header.w;
+            float height_ratio = (float) image_settings.max_height / image_header.h;
             float zoom_ratio = (width_ratio < height_ratio) ? width_ratio : height_ratio;
 
             int zoom_factor = (int) (zoom_ratio * 256);
 
-            lv_img_set_size_mode(ui_imgobj, LV_IMG_SIZE_MODE_REAL);
+            // lv_img_set_size_mode(ui_imgobj, LV_IMG_SIZE_MODE_REAL);
             lv_img_set_zoom(ui_imgobj, zoom_factor);
         }
 
@@ -1953,12 +1953,12 @@ void free_subdirectories(char **dir_names) {
 void map_drop_down_to_index(lv_obj_t *dropdown, int value, const int *options, int num_options, int def_index) {
     for (int i = 0; i < num_options; i++) {
         if (value == options[i]) {
-            lv_dropdown_set_selected(dropdown, i);
+            lv_dropdown_set_selected(dropdown, i, LV_ANIM_ON);
             return;
         }
     }
 
-    lv_dropdown_set_selected(dropdown, def_index);
+    lv_dropdown_set_selected(dropdown, def_index, LV_ANIM_ON);
 }
 
 int map_drop_down_to_value(int selected_index, const int *options, int num_options, int def_value) {

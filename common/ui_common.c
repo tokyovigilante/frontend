@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "../font/awesome_small.h"
 #include "../font/notosans.h"
 #include "img/nothing.h"
